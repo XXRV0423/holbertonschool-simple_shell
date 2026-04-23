@@ -72,7 +72,7 @@ void execute_command(char *cmd)
 {
 	char *argv[2];
 	pid_t pid;
-	int status;
+	int status = 0;
 
 	pid = fork();
 	if (pid == -1)
@@ -95,7 +95,7 @@ void execute_command(char *cmd)
 	
 	else
 	{
-		waitpid(pid, status, 0);
+		waitpid(pid, &status, 0);
 	}
 }
 
