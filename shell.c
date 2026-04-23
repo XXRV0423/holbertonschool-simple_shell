@@ -1,32 +1,13 @@
 #include "simple_shell.h"
 
 /**
- * main - Entry point for simple_shell
+ * display_promt - Prints the shell promt to stdout
+ * Only displays when stdin is connected to a terminal
  *
- * Repeatedly display a prompt, reads a command,and
- * executes it until EOF is recieved or a read error occurs.
- *
- * Return: Always 0
+ * Return: void
  */
-int main(void)
+void display_promt(void)
 {
-	char *line;
-
-	while (1)
-	{
-		display_prompt();
-
-		line = read_line();
-		if (line == NULL)
-			break;
-
-		strip_newline(line);
-
-		if (line[0] != '\0')
-			execute_command(line);
-
-		free(line);
-	}
-
-	return (0);
+        if (isatty(STDIN_FILENO))
+                write(STDOUT_FILENO, PROMPT, 2);
 }
