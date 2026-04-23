@@ -1,8 +1,7 @@
 #include "simple_shell.h"
 
 /**
- * display_prompt - Prints the shell prompt to stdout
- * Only displays when stdin is connected to a terminal
+ * display_prompt - prints the shell prompt to stdout
  *
  * Return: void
  */
@@ -13,13 +12,9 @@ void display_prompt(void)
 }
 
 /**
- * read_line - Reads one line of input from stdin using getline
+ * read_line - reads one line from stdin
  *
- * Allocates a buffer via getline. The caller is responsable for
- * freeing the returned pointer. Prints a new line on EOF when
- * stdin is a terminal
- *
- * Return: Pointer to the allocated line, or NULL on EOF/error
+ * Return: pointer to input line, or NULL on EOF
  */
 char *read_line(void)
 {
@@ -30,6 +25,7 @@ char *read_line(void)
 	line = NULL;
 	len = 0;
 	nread = getline(&line, &len, stdin);
+
 	if (nread == -1)
 	{
 		free(line);
@@ -37,42 +33,68 @@ char *read_line(void)
 			write(STDOUT_FILENO, "\n", 1);
 		return (NULL);
 	}
+
 	return (line);
 }
 
 /**
- * strip_newline - Removes the trailing newline character
- * from a string
- * @str: The string to modify in place
+ * split_line - splits a line into tokens
+ * @line: line to split
  *
- * Searches for the first newline and replaces it with a null byte
- *
- * Return: void
+ * Return: array of tokens
  */
-void strip_newline(char *str)
+char **split_line(char *line)
 {
-	char *newline;
+	int bufsize, position;
+	char **tokens;
+	char *token;
 
-	newline = strchr(str, '\n');
-	if (newline)
-		*newline = '\0';
+	bufsize = TOK_BUFSIZE;
+	position = 0;
+	tokens = malloc(sizeof(char *) * bufsize);
+	if (tokens == NULL)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	token = strtok(line, TOK_DELIM);
+	while (token != NULL)
+	{
+		tokens[position] = token;
+		position++;
+
+		if (position >= bufsize)
+		{
+			bufsize += TOK_BUFSIZE;
+			tokens = realloc(tokens, sizeof(char *) * bufsize);
+			if (tokens == NULL)
+			{
+				perror("realloc");
+				exit(EXIT_FAILURE);
+			}
+		}
+
+		token = strtok(NULL, TOK_DELIM);
+	}
+
+	tokens[position] = NULL;
+	return (tokens);
 }
 
 /**
- * execute_command - Forks and executes the given command
- * @cmd: the full path to the executable to run
- *
- * Prints an error message to stderr if the executable
- * cannot be found or executed. The parent waits for the
- * child to complete.
+ * execute_command - forks and executes a command
+ * @argv: argument vector
  *
  * Return: void
  */
-void execute_command(char *cmd)
+void execute_command(char **argv)
 {
-	char *argv[2];
 	pid_t pid;
-	int status = 0;
+	int status;
+
+	if (argv[0] == NULL)
+		return;
 
 	pid = fork();
 	if (pid == -1)
@@ -83,16 +105,12 @@ void execute_command(char *cmd)
 
 	if (pid == 0)
 	{
-		argv[0] = cmd;
-		argv[1] = NULL;
-
-		if (execve(cmd, argv, environ) == -1)
+		if (execve(argv[0], argv, environ) == -1)
 		{
-			fprintf(stderr, "./simple_shell: No such file or directory: %s\n", cmd);
+			fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
 			exit(EXIT_FAILURE);
 		}
 	}
-	
 	else
 	{
 		waitpid(pid, &status, 0);
@@ -100,16 +118,14 @@ void execute_command(char *cmd)
 }
 
 /**
- * main - Entry point for simple_shell
- *
- * Repeatedly display a prompt, reads a command, and
- * executes it until EOF is recieved or a read error occurs
+ * main - entry point for simple shell
  *
  * Return: Always 0
  */
 int main(void)
 {
 	char *line;
+	char **argv;
 
 	while (1)
 	{
@@ -119,11 +135,10 @@ int main(void)
 		if (line == NULL)
 			break;
 
-		strip_newline(line);
+		argv = split_line(line);
+		execute_command(argv);
 
-		if (line[0] != '\0')
-			execute_command(line);
-		
+		free(argv);
 		free(line);
 	}
 
