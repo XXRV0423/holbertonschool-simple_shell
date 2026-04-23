@@ -39,3 +39,21 @@ char *read_line(void)
 	}
 	return (line);
 }
+
+/**
+ * strip_newline - Removes the trailing newline character
+ * from a string
+ * @str: The string to modify in place
+ *
+ * Searches for the first newline and replaces it with a null byte
+ *
+ * Return: void
+ */
+void strip_newline(char *str)
+{
+	char *newline;
+
+	newline = strchr(str, '\n');
+	if (newline)
+		*newline = '\0';
+}
