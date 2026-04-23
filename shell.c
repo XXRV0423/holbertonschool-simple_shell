@@ -92,7 +92,6 @@ void execute_command(char *cmd)
 			exit(EXIT_FAILURE);
 		}
 	}
-	
 	else
 	{
 		waitpid(pid, &status, 0);
@@ -123,7 +122,6 @@ int main(void)
 
 		if (line[0] != '\0')
 			execute_command(line);
-		
 		free(line);
 	}
 
