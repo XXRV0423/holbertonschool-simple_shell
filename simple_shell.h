@@ -18,6 +18,7 @@ extern char **environ;
 void display_prompt(void);
 char *read_line(void);
 char **split_line(char *line);
+char *find_in_path(char *cmd);
 void execute_command(char **argv);
 
 #endif /*SIMPLE_SHELL_H*/
