@@ -18,6 +18,7 @@ extern char **environ;
 void display_prompt(void);
 char *read_line(void);
 char **split_line(char *line);
+char *get_path_env(void);
 char *find_in_path(char *cmd);
 void execute_command(char **argv);
 
