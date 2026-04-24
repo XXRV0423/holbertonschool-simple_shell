@@ -84,13 +84,20 @@ char **split_line(char *line)
 
 /**
  * main - entry point for simple shell
+ * @argc: argument count
+ * @argv: argument vector
  *
  * Return: Always 0
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *line;
-	char **argv;
+	char **args;
+	int last_status, cmd_num;
+
+	(void)argc;
+	last_status = 0;
+	cmd_num = 1;
 
 	while (1)
 	{
@@ -100,12 +107,13 @@ int main(void)
 		if (line == NULL)
 			break;
 
-		argv = split_line(line);
-		execute_command(argv);
+		args = split_line(line);
+		last_status = execute_command(args, argv[0], cmd_num);
+		cmd_num++;
 
-		free(argv);
+		free(args);
 		free(line);
 	}
 
-	return (0);
+	return (last_status);
 }
