@@ -108,6 +108,14 @@ int main(int argc, char **argv)
 			break;
 
 		args = split_line(line);
+
+		if (args[0] != NULL && strcmp(args[0], "exit") == 0)
+		{
+			free(args);
+			free(line);
+			return (last_status);
+		}
+
 		last_status = execute_command(args, argv[0], cmd_num);
 		cmd_num++;
 
