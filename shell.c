@@ -83,41 +83,6 @@ char **split_line(char *line)
 }
 
 /**
- * execute_command - forks and executes a command
- * @argv: argument vector
- *
- * Return: void
- */
-void execute_command(char **argv)
-{
-	pid_t pid;
-	int status;
-
-	if (argv[0] == NULL)
-		return;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
-
-	if (pid == 0)
-	{
-		if (execve(argv[0], argv, environ) == -1)
-		{
-			fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-	}
-}
-
-/**
  * main - entry point for simple shell
  *
  * Return: Always 0
