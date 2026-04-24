@@ -49,3 +49,49 @@ char *find_in_path(char *cmd)
 	free(path_copy);
 	return (NULL);
 }
+
+/**
+ * execute_command - forks and executes a command
+ * @argv: argument vector
+ *
+ * Return: void
+ */
+void execute_command(char **argv)
+{
+	pid_t pid;
+	int status;
+	char *cmd_path;
+
+	if (argv[0] == NULL)
+		return;
+
+	cmd_path = find_in_path(argv[0]);
+	if (cmd_path == NULL)
+	{
+		fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
+		return;
+	}
+
+	pid = fork();
+	if (pid == -1)
+	{
+		free(cmd_path);
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+
+	if (pid == 0)
+	{
+		if (execve(cmd_path, argv, environ) == -1)
+		{
+			fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
+			free(cmd_path);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		waitpid(pid, &status, 0);
+	}
+	free(cmd_path);
+}
