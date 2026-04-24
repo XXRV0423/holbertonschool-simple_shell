@@ -1,6 +1,27 @@
 #include "simple_shell.h"
 
 /**
+ * get_path_env - retrieves the PATH value from the environ array
+ *
+ * Return: pointer to the PATH value string, or NULL if not found
+ */
+char *get_path_env(void)
+{
+	int i;
+ 
+	if (environ == NULL)
+		return (NULL);
+ 
+	for (i = 0; environ[i] != NULL; i++)
+	{
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+			return (environ[i] + 5);
+	}
+ 
+	return (NULL);
+}
+
+/**
  * find_in_path - searches for a command in the PATH directories
  * @cmd: command name to search
  *
@@ -17,7 +38,7 @@ char *find_in_path(char *cmd)
 	if (access(cmd, X_OK) == 0)
 		return (strdup(cmd));
 
-	path_env = getenv("PATH");
+	path_env = get_path_env();
 	if (path_env == NULL || *path_env == '\0')
 		return (NULL);
 
