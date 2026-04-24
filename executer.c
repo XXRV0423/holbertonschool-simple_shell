@@ -35,8 +35,12 @@ char *find_in_path(char *cmd)
 	if (cmd == NULL)
 		return (NULL);
 
-	if (access(cmd, X_OK) == 0)
-		return (strdup(cmd));
+	if (strchr(cmd, '/') != NULL)
+	{
+		if (access(cmd, X_OK) == 0)
+			return (strdup(cmd));
+		return (NULL);
+	}
 
 	path_env = get_path_env();
 	if (path_env == NULL || *path_env == '\0')
