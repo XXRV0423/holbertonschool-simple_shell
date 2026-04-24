@@ -8,16 +8,16 @@
 char *get_path_env(void)
 {
 	int i;
- 
+
 	if (environ == NULL)
 		return (NULL);
- 
+
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		if (strncmp(environ[i], "PATH=", 5) == 0)
 			return (environ[i] + 5);
 	}
- 
+
 	return (NULL);
 }
 
@@ -72,25 +72,48 @@ char *find_in_path(char *cmd)
 }
 
 /**
- * execute_command - forks and executes a command
+ * child_process - runs execve in the child and handles failure
+ * @cmd_path: full path to the command
  * @argv: argument vector
+ * @prog_name: name of the shell program
+ * @cmd_num: command number for error messages
  *
  * Return: void
  */
-void execute_command(char **argv)
+void child_process(char *cmd_path, char **argv, char *prog_name, int cmd_num)
+{
+	if (execve(cmd_path, argv, environ) == -1)
+	{
+		fprintf(stderr, "%s: %d: %s: not found\n",
+			prog_name, cmd_num, argv[0]);
+		free(cmd_path);
+		exit(127);
+	}
+}
+
+/**
+ * execute_command - forks and executes a command
+ * @argv: argument vector
+ * @prog_name: name of the shell program (argv[0] from main)
+ * @cmd_num: command number for error messages
+ *
+ * Return: exit status of the executed command
+ */
+int execute_command(char **argv, char *prog_name, int cmd_num)
 {
 	pid_t pid;
 	int status;
 	char *cmd_path;
 
 	if (argv[0] == NULL)
-		return;
+		return (0);
 
 	cmd_path = find_in_path(argv[0]);
 	if (cmd_path == NULL)
 	{
-		fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
-		return;
+		fprintf(stderr, "%s: %d: %s: not found\n",
+			prog_name, cmd_num, argv[0]);
+		return (127);
 	}
 
 	pid = fork();
@@ -102,17 +125,14 @@ void execute_command(char **argv)
 	}
 
 	if (pid == 0)
-	{
-		if (execve(cmd_path, argv, environ) == -1)
-		{
-			fprintf(stderr, "./simple_shell: 1: %s: not found\n", argv[0]);
-			free(cmd_path);
-			exit(EXIT_FAILURE);
-		}
-	}
+		child_process(cmd_path, argv, prog_name, cmd_num);
 	else
-	{
 		waitpid(pid, &status, 0);
-	}
+
 	free(cmd_path);
+
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+
+	return (0);
 }
