@@ -116,6 +116,14 @@ int main(int argc, char **argv)
 			return (last_status);
 		}
 
+		if (args[0] != NULL && strcmp(args[0], "env") == 0)
+		{
+			print_env();
+			free(args);
+			free(line);
+			continue;
+		}
+
 		last_status = execute_command(args, argv[0], cmd_num);
 		cmd_num++;
 

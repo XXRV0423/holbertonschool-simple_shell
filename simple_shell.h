@@ -20,7 +20,8 @@ char *read_line(void);
 char **split_line(char *line);
 char *get_path_env(void);
 char *find_in_path(char *cmd);
-void chils_process(char *cmd_path, char **argv, char *prog_name, int cmd_num);
+void child_process(char *cmd_path, char **argv, char *prog_name, int cmd_num);
 int execute_command(char **argv, char *prog_name, int cmd_num);
+void print_env(void);
 
 #endif /*SIMPLE_SHELL_H*/

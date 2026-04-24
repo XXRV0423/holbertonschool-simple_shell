@@ -140,3 +140,19 @@ int execute_command(char **argv, char *prog_name, int cmd_num)
 
 	return (0);
 }
+
+/**
+ * print_env - prints the current environment
+ *
+ * Return: void
+ */
+void print_env(void)
+{
+	int i = 0;
+
+	while (environ[i] != NULL)
+	{
+		printf("%s\n", environ[i]);
+		i++;
+	}
+}
