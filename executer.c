@@ -35,7 +35,7 @@ char *find_in_path(char *cmd)
 			free(path_copy);
 			return (NULL);
 		}
-		sprintf(full_path, "%s/%S", dir, cmd);
+		sprintf(full_path, "%s/%s", dir, cmd);
 
 		if (access(full_path, X_OK) == 0)
 		{
