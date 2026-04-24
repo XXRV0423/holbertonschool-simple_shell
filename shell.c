@@ -41,7 +41,7 @@ char *read_line(void)
  * split_line - splits a line into tokens
  * @line: line to split
  *
- * Return: array of tokens
+ * Return: array of tokens, or NULL on failure
  */
 char **split_line(char *line)
 {
