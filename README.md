@@ -228,7 +228,6 @@ Holberton School
 
 ## Authors
 
-Developed as the final project of the first trimester at **Holberton School**.
 
 | Name | GitHub |
 |---|---|
