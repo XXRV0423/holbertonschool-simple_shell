@@ -1,0 +1,42 @@
+.TH SIMPLE_SHELL 1 "April 2026" "1.0" "Simple Shell"
+.SH NAME
+simple_shell \- simple command line interpreter
+.SH SYNOPSIS
+.B ./hsh
+.SH DESCRIPTION
+.B simple_shell
+is a basic shell that reads commands from standard input and executes them.
+It supports commands with arguments, searches in PATH, and runs programs
+using fork and execve.
+
+.PP
+The shell is structured across multiple source files:
+.TP
+.B shell.c
+Handles the main loop, prompt display, input reading, and command parsing.
+.TP
+.B executor.c
+Handles PATH resolution and command execution using fork and execve.
+.TP
+.B simple_shell.h
+Header file containing function prototypes, macros, and shared definitions.
+
+.SH BUILTINS
+.TP
+.B exit
+Exit the shell.
+.TP
+.B env
+Print the environment variables.
+
+.SH USAGE
+Run the shell:
+.PP
+.B ./hsh
+.PP
+Run a command:
+.PP
+.B ls -l
+
+.SH AUTHORS
+Xander Roldán and Alejandro Colombani
